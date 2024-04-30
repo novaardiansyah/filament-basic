@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PostResource\Pages;
+use App\Filament\Resources\PostResource\RelationManagers\UsersRelationManager;
 use App\Models\Post;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\ColorPicker;
@@ -73,12 +74,12 @@ class PostResource extends Resource
                 TagsInput::make('tags')
                   ->required(),
                 Checkbox::make('published'),
-              ])
+              ]),
           ])
           ->columnSpan(1)
           ->columns(1),
-      ])
-      ->columns(3);
+    ])
+    ->columns(3);
   }
 
   public static function table(Table $table): Table
@@ -132,7 +133,7 @@ class PostResource extends Resource
   public static function getRelations(): array
   {
     return [
-      //
+      UsersRelationManager::class
     ];
   }
 
