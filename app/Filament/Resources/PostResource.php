@@ -12,10 +12,13 @@ use Filament\Forms\Components\Group;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Tabs;
+use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\IconPosition;
 use Filament\Tables;
 use Filament\Tables\Columns\CheckboxColumn;
 use Filament\Tables\Columns\ColorColumn;
@@ -34,52 +37,49 @@ class PostResource extends Resource
   {
     return $form
     ->schema([
-      Section::make('Post Details')
-        ->description('Please fill in the post details below.')
-        ->collapsible()
-        ->schema([
-          TextInput::make('title')
-            ->required(),
-          TextInput::make('slug')
-            ->required()
-            ->unique(ignoreRecord: true),
-          Select::make('category_id')
-            ->label('Category')
-            ->relationship('category', 'name')
-            ->native(false)
-            ->searchable()
-            ->preload()
-            ->required(),
-          ColorPicker::make('color')
-            ->required(),
-          MarkdownEditor::make('content')
-            ->columnSpanFull(),
-        ])
-        ->columnSpan(2)
-        ->columns(2),
-        
-        Group::make()
+      Tabs::make('Posts')->tabs([
+        Tab::make('Headline')
+          ->icon('heroicon-m-inbox')
+          ->iconPosition(IconPosition::After)
           ->schema([
-            Section::make('Image')
-              ->collapsible()
-              ->schema([
-                FileUpload::make('thumbnail')
-                  ->disk('public')
-                  ->directory('thumbnails'),
-              ]),
-
-            Section::make('Meta')
-              ->collapsible()
-              ->schema([
-                TagsInput::make('tags')
-                  ->required(),
-                Checkbox::make('published'),
-              ]),
+            TextInput::make('title')
+              ->required(),
+            TextInput::make('slug')
+              ->required()
+              ->unique(ignoreRecord: true),
+            Select::make('category_id')
+              ->label('Category')
+              ->relationship('category', 'name')
+              ->native(false)
+              ->searchable()
+              ->preload()
+              ->required(),
+            ColorPicker::make('color')
+              ->required(),
           ])
-          ->columnSpan(1)
-          ->columns(1),
-    ])
-    ->columns(3);
+          ->columns(2),
+
+        Tab::make('Content')
+          ->badge(0)
+          ->schema([
+            MarkdownEditor::make('content')
+              ->required()
+              ->columnSpanFull(),
+          ]),
+
+        Tab::make('Meta')
+          ->schema([
+            FileUpload::make('thumbnail')
+              ->disk('public')
+              ->directory('thumbnails'),
+            TagsInput::make('tags')
+              ->required(),
+            Checkbox::make('published'),
+          ])
+      ])
+      ->activeTab(1)
+      ->persistTabInQueryString()
+    ])->columns(1);
   }
 
   public static function table(Table $table): Table
