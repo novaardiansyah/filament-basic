@@ -7,6 +7,7 @@ use App\Models\Post;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Group;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -34,6 +35,7 @@ class PostResource extends Resource
     ->schema([
       Section::make('Post Details')
         ->description('Please fill in the post details below.')
+        ->collapsible()
         ->schema([
           TextInput::make('title')
             ->required(),
@@ -48,17 +50,34 @@ class PostResource extends Resource
             ->required(),
           ColorPicker::make('color')
             ->required(),
-          TagsInput::make('tags')
-            ->required(),
-          Checkbox::make('published'),
-          FileUpload::make('thumbnail')
-            ->disk('public')
-            ->directory('thumbnails'),
           MarkdownEditor::make('content')
-            ->columnSpanFull()
+            ->columnSpanFull(),
         ])
-        ->columns(2)
-      ]);
+        ->columnSpan(2)
+        ->columns(2),
+        
+        Group::make()
+          ->schema([
+            Section::make('Image')
+              ->collapsible()
+              ->schema([
+                FileUpload::make('thumbnail')
+                  ->disk('public')
+                  ->directory('thumbnails'),
+              ]),
+
+            Section::make('Meta')
+              ->collapsible()
+              ->schema([
+                TagsInput::make('tags')
+                  ->required(),
+                Checkbox::make('published'),
+              ])
+          ])
+          ->columnSpan(1)
+          ->columns(1),
+      ])
+      ->columns(3);
   }
 
   public static function table(Table $table): Table
