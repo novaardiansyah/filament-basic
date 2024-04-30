@@ -40,7 +40,8 @@ class PostResource extends Resource
           TextInput::make('title')
             ->required(),
           TextInput::make('slug')
-            ->required(),
+            ->required()
+            ->unique(ignoreRecord: true),
           Select::make('category_id')
             ->label('Category')
             ->relationship('category', 'name')
@@ -84,18 +85,32 @@ class PostResource extends Resource
   {
     return $table
     ->columns([
-        ImageColumn::make('thumbnail'),
-        ColorColumn::make('color'),
-        TextColumn::make('title'),
-        TextColumn::make('slug'),
-        TextColumn::make('category.name'),
+        ImageColumn::make('thumbnail')
+          ->toggleable(),
+        ColorColumn::make('color')
+          ->toggleable(),
+        TextColumn::make('title')
+          ->sortable()
+          ->searchable(),
+        TextColumn::make('slug')
+          ->toggleable()
+          ->sortable()
+          ->searchable(),
+        TextColumn::make('category.name')
+          ->toggleable()
+          ->sortable()
+          ->searchable(),
         TextColumn::make('tags'),
-        CheckboxColumn::make('published'),
-        TextColumn::make('content'),
+        CheckboxColumn::make('published')
+          ->toggleable(),
+        TextColumn::make('content')
+          ->toggleable(),
         TextColumn::make('created_at')
+          ->sortable()
           ->date('M d, Y H:i')
           ->toggleable(),
         TextColumn::make('updated_at')
+          ->sortable()
           ->date('M d, Y H:i')
           ->toggleable(),
       ])
