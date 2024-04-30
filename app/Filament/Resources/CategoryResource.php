@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UserResource\Pages;
-use App\Models\User;
+use App\Filament\Resources\CategoryResource\Pages;
+use App\Models\Category;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -12,31 +12,25 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class UserResource extends Resource
+class CategoryResource extends Resource
 {
-  protected static ?string $model = User::class;
+  protected static ?string $model = Category::class;
 
-  protected static ?string $navigationIcon = 'heroicon-o-users';
+  protected static ?string $navigationIcon = 'heroicon-o-folder';
+  protected static ?string $modelLabel = 'Post Categories';
 
   public static function form(Form $form): Form
   {
     return $form
       ->schema([
-        Section::make('User details')
-          ->description('Please fill your user details.')
+        Section::make('Category Details')
+          ->description('Please fill in the category details below.')
           ->schema([
             TextInput::make('name')
               ->required(),
-            TextInput::make('email')
-              ->email()
-              ->required(),
-            TextInput::make('password')
-              ->password()
-              ->revealable()
+            TextInput::make('slug')
               ->required()
-              ->minLength(7)
-              ->maxLength(20)
-              ->visibleOn('create')
+              ->unique(),
           ])
           ->columns(2)
       ]);
@@ -47,15 +41,15 @@ class UserResource extends Resource
     return $table
       ->columns([
         TextColumn::make('name'),
-        TextColumn::make('email'),
+        TextColumn::make('slug'),
         TextColumn::make('created_at')
-          ->label('Member Since')
-          ->date('M d, Y H:i'),
-        TextColumn::make('updated_at')
-          ->label('Last Update')
           ->date('M d, Y H:i')
-          ->toggleable()
+          ->toggleable(),
+        TextColumn::make('updated_at')
+          ->date('M d, Y H:i')
+          ->toggleable(),
       ])
+      ->defaultSort('created_at', 'desc')
       ->filters([
         //
       ])
@@ -63,9 +57,9 @@ class UserResource extends Resource
         Tables\Actions\EditAction::make(),
       ])
       ->bulkActions([
-        // Tables\Actions\BulkActionGroup::make([
-        //   Tables\Actions\DeleteBulkAction::make(),
-        // ]),
+        Tables\Actions\BulkActionGroup::make([
+          Tables\Actions\DeleteBulkAction::make(),
+        ]),
       ]);
   }
 
@@ -79,9 +73,9 @@ class UserResource extends Resource
   public static function getPages(): array
   {
     return [
-      'index'  => Pages\ListUsers::route('/'),
-      'create' => Pages\CreateUser::route('/create'),
-      'edit'   => Pages\EditUser::route('/{record}/edit'),
+      'index' => Pages\ListCategories::route('/'),
+      'create' => Pages\CreateCategory::route('/create'),
+      'edit' => Pages\EditCategory::route('/{record}/edit'),
     ];
   }
 }
