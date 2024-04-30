@@ -30,7 +30,7 @@ class CategoryResource extends Resource
               ->required(),
             TextInput::make('slug')
               ->required()
-              ->unique(),
+              ->unique(ignoreRecord: true),
           ])
           ->columns(2)
       ]);
