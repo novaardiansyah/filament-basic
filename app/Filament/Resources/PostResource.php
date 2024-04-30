@@ -24,7 +24,11 @@ use Filament\Tables\Columns\CheckboxColumn;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class PostResource extends Resource
 {
@@ -117,7 +121,21 @@ class PostResource extends Resource
       ])
       ->defaultSort('created_at', 'desc')
       ->filters([
-        //
+        Filter::make('Published')
+          ->query(function (Builder $query): Builder {
+            return $query->where('published', true);
+          }),
+        
+        TernaryFilter::make('published')
+          ->label('Published')
+          ->native(false),
+
+        SelectFilter::make('category_id')
+          ->label('Category')
+          ->relationship('category', 'name')
+          ->searchable()
+          ->preload()
+          ->multiple()
       ])
       ->actions([
         Tables\Actions\EditAction::make(),
