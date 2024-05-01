@@ -3,7 +3,9 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PostResource\Pages;
+use App\Filament\Resources\PostResource\RelationManagers\CommentsRelationManager;
 use App\Filament\Resources\PostResource\RelationManagers\UsersRelationManager;
+use App\Models\Comment;
 use App\Models\Post;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\ColorPicker;
@@ -151,7 +153,8 @@ class PostResource extends Resource
   public static function getRelations(): array
   {
     return [
-      UsersRelationManager::class
+      UsersRelationManager::class,
+      CommentsRelationManager::class
     ];
   }
 

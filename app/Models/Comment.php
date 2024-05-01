@@ -5,26 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-class Post extends Model
+class Comment extends Model
 {
   use HasFactory;
-  protected $table = 'posts';
+  protected $table = 'comments';
   protected $guarded = ['id'];
-  protected $casts = [
-    'tags' => 'array'
-  ];
 
-  public function category(): BelongsTo
+  public function commentable(): MorphTo
   {
-    return $this->belongsTo(Category::class);
+    return $this->morphTo();
   }
 
-  public function users(): BelongsToMany
+  public function user(): BelongsTo
   {
-    return $this->belongsToMany(User::class, 'post_user')->withPivot(['order'])->withTimestamps();
+    return $this->belongsTo(User::class);
   }
 
   public function comments(): MorphMany
