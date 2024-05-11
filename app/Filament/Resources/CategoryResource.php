@@ -8,10 +8,12 @@ use App\Models\Category;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 
 class CategoryResource extends Resource
 {
@@ -28,10 +30,13 @@ class CategoryResource extends Resource
           ->description('Please fill in the category details below.')
           ->schema([
             TextInput::make('name')
-              ->required(),
-            TextInput::make('slug')
               ->required()
-              ->unique(ignoreRecord: true),
+              ->live(onBlur: true)
+              ->afterStateUpdated(function(string $operation, string $state, Set $set) {
+                if ($operation === 'create') {
+                  $set('slug', Str::slug($state));
+                }
+              })
           ])
           ->columns(2)
       ]);
@@ -56,6 +61,7 @@ class CategoryResource extends Resource
       ])
       ->actions([
         Tables\Actions\EditAction::make(),
+        Tables\Actions\DeleteAction::make(),
       ])
       ->bulkActions([
         Tables\Actions\BulkActionGroup::make([
