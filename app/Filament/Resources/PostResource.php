@@ -16,6 +16,7 @@ use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\IconPosition;
 use Filament\Tables;
@@ -28,6 +29,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 
 class PostResource extends Resource
 {
@@ -47,9 +49,16 @@ class PostResource extends Resource
           ->iconPosition(IconPosition::After)
           ->schema([
             TextInput::make('title')
-              ->required(),
+              ->required()
+              ->live(onBlur: true)
+              ->afterStateUpdated(function(string $operation, string $state, Set $set) {
+                if ($operation === 'create') {
+                  $set('slug', Str::slug($state));
+                }
+              }),
             TextInput::make('slug')
               ->required()
+              ->disabledOn('edit')
               ->unique(ignoreRecord: true),
             Select::make('category_id')
               ->label('Category')
